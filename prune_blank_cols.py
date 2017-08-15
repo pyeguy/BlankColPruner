@@ -71,12 +71,17 @@ if __name__ == '__main__':
 	elif os.path.isdir(args.input):
 		walker = os.walk(args.input)
 		root, dirs, files = next(walker)
+		outputpath = os.path.join(root,args.suffix.lstrip('_'))
+		try:
+			os.mkdir(outputpath)
+		except:
+			print("Folder already exists, files will be overwritten")
 
 		for fname in files:
 			fnamecomps = fname.lstrip('.').lstrip('/').lstrip('\\').split('.')
 			pdf = load_and_prune(fname=fname,path=root,empty_threshold=args.threshold)
 			delim = infer_delim(fname)
-			pdf.to_csv(os.path.join(root,fnamecomps[0]+args.suffix+'.'+fnamecomps[1]),sep=delim)
+			pdf.to_csv(os.path.join(outputpath,fnamecomps[0]+args.suffix+'.'+fnamecomps[1]),sep=delim)
 	else:
 		raise Exception('Unkown input type. Must be file or dir.')
 
