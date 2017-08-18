@@ -14,7 +14,7 @@ def main():
 	# prune_df = lambda x:prune_df(x,args.threshold)
 
 	if os.path.isfile(args.input):
-		fnamecomps = args.input.lstrip('.').lstrip('/').lstrip('\\').split('.')
+		fnamecomps = _filenamecomps(args.input)
 		pdf = load_and_prune(fname=args.input,path='',empty_threshold=args.threshold)
 		delim = infer_delim(args.input)
 		pdf.to_csv(fnamecomps[0]+args.suffix+'.'+fnamecomps[1],sep=delim)
@@ -29,7 +29,7 @@ def main():
 			print("Folder already exists, files will be overwritten")
 
 		for fname in files:
-			fnamecomps = fname.lstrip('.').lstrip('/').lstrip('\\').split('.')
+			fnamecomps = _filenamecomps(fname)
 			pdf = load_and_prune(fname=fname,path=root,empty_threshold=args.threshold)
 			delim = infer_delim(fname)
 			pdf.to_csv(os.path.join(outputpath,fnamecomps[0]+args.suffix+'.'+fnamecomps[1]),sep=delim)

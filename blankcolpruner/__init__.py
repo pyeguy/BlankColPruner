@@ -7,6 +7,10 @@ import os
 # 	pass
 
 
+def _filenamecomps(localfilename):
+	fnamecomps = localfilename.lstrip('.').lstrip('/').lstrip('\\').split('.')
+	return fnamecomps
+
 
 def prune_df(df,empty_threshold):
 	'''
@@ -29,7 +33,7 @@ def prune_df(df,empty_threshold):
 	
 
 def infer_delim(fname):
-	fnamecomps = fname.lstrip('.').lstrip('/').lstrip('\\').split('.')
+	fnamecomps = _filenamecomps(fname)
 	fext = fnamecomps[1]
 	
 	if fext.lower() == 'csv':
