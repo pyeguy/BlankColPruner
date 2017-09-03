@@ -1,4 +1,9 @@
+'''
+Command Line script for pruning columns from tabular datasets w/ blank values.
 
+Command line arguments for specifying number of blank values threshold for pruning and custom suffix for filenames.
+
+'''
 from blankcolpruner import *
 
 import argparse,os
@@ -11,13 +16,15 @@ def main():
 	parser.add_argument('-t','--threshold',help='the number of empty rows to be considered a column to prune',default=1000,type=int)
 	args = parser.parse_args()
 
-	# prune_df = lambda x:prune_df(x,args.threshold)
 
 	if os.path.isfile(args.input):
 		fnamecomps = _filenamecomps(args.input)
 		pdf = load_and_prune(fname=args.input,path='',empty_threshold=args.threshold)
 		delim = infer_delim(args.input)
-		pdf.to_csv(fnamecomps[0]+args.suffix+'.'+fnamecomps[1],sep=delim)
+		if not delim:
+			delim = '\t'
+		pdf.to_csv(fnamecomps.filename + args.suffix + '.' + fnamecomps.ext,
+				sep=delim)
 
 	elif os.path.isdir(args.input):
 		walker = os.walk(args.input)
@@ -32,7 +39,11 @@ def main():
 			fnamecomps = _filenamecomps(fname)
 			pdf = load_and_prune(fname=fname,path=root,empty_threshold=args.threshold)
 			delim = infer_delim(fname)
-			pdf.to_csv(os.path.join(outputpath,fnamecomps[0]+args.suffix+'.'+fnamecomps[1]),sep=delim)
+			if not delim:
+				delim = '\t'
+			pdf.to_csv(os.path.join(outputpath,
+				fnamecomps.filename + args.suffix + '.' + fnamecomps.ext),
+				sep=delim)
 	else:
 		raise Exception('Unkown input type. Must be file or dir.')	
 

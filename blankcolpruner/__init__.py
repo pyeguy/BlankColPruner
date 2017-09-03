@@ -1,16 +1,20 @@
 import pandas as pd
 import os
+from collections import namedtuple
 
 # try:
 # 	from tqdm import tqdm
 # except:
 # 	pass
 
+FileNameComps = namedtuple('FileNameComps','filename ext')
 
 def _filenamecomps(localfilename):
-	fnamecomps = localfilename.lstrip('.').lstrip('/').lstrip('\\').split('.')
-	return fnamecomps
-
+	path,fname = os.path.slit(localfilename)
+	fnamecomps = fname.split('.')
+	if len(fnamecomps) == 1:
+		fnamecomps.append('')
+	return FileNameComps(fnamecomps)
 
 def prune_df(df,empty_threshold):
 	'''
@@ -31,10 +35,9 @@ def prune_df(df,empty_threshold):
 	print("Dropped {} cols".format(len(bad_cols)))
 	return df
 	
-
 def infer_delim(fname):
 	fnamecomps = _filenamecomps(fname)
-	fext = fnamecomps[1]
+	fext = fnamecomps.ext
 	
 	if fext.lower() == 'csv':
 		delim = ','
@@ -46,7 +49,6 @@ def infer_delim(fname):
 	return delim
 
 def load_and_prune(fname,path,**kwargs):
-	# fnamecomps =fname.split('.')
 	try:
 		delim = kwargs['delim']
 	except KeyError:
