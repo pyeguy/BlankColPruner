@@ -10,6 +10,7 @@ from collections import namedtuple
 FileNameComps = namedtuple('FileNameComps','filename ext')
 
 def _filenamecomps(localfilename):
+	'''takes a path+filename returns (filename,ext) namedtuple'''
 	path,fname = os.path.slit(localfilename)
 	fnamecomps = fname.split('.')
 	if len(fnamecomps) == 1:
@@ -36,12 +37,16 @@ def prune_df(df,empty_threshold):
 	return df
 	
 def infer_delim(fname):
+	'''
+	takes a filename and attempts to guess the delimiter from the extension
+	returns None if it's not obvious.
+	'''
 	fnamecomps = _filenamecomps(fname)
 	fext = fnamecomps.ext
-	
-	if fext.lower() == 'csv':
+	fextl = fext.lower()
+	if fextl == 'csv':
 		delim = ','
-	elif fext.lower() == 'tab':
+	elif fextl == 'tab':
 		delim = '\t'
 	else:
 		delim = None	
@@ -49,6 +54,16 @@ def infer_delim(fname):
 	return delim
 
 def load_and_prune(fname,path,**kwargs):
+	'''
+	takes a filename and path and loads the file attempting to first guess delim.
+	returns the pruned dataframe object
+	Args:
+		fname (str) : the filename of the file to be pruned
+		path (str) : path to fname
+		**kwargs : kwargs that get passed to prune_df
+	Returns:
+		pdf (pd.DataFrame) : the pruned dataframe object
+	'''
 	try:
 		delim = kwargs['delim']
 	except KeyError:
